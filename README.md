@@ -17,6 +17,11 @@ var client = new WiaSDK.DeviceClient({
 ```
 
 ## Publishing Events
+<ul>
+  <li>eventName (required) - String - Name of the event</li>
+  <li>eventData (optional) - Object - Data associated with the event</li>
+  <li>callback (optional) - Function - Callback after the event has been sent</li>
+</ul
 
 ```sh
 client.publishEvent("Sensor", {
