@@ -17,6 +17,7 @@ var client = new WiaSDK.DeviceClient({
 ```
 
 ## Publishing Events
+
 <ul>
   <li>eventName (required) - String - Name of the event</li>
   <li>eventData (optional) - Object - Data associated with the event</li>
@@ -30,7 +31,6 @@ client.publishEvent("Sensor", {
     console.log("In callback!");
 });
 ```
-
 
 ## License
 This SDK is distributed under the
