@@ -4,33 +4,48 @@
 To install the Wia SDK for Node.js is to use the npm package manager for Node.js. Simply type the following into a terminal window:
 
 ```sh
-npm install wia-sdk
+npm install wia
 ```
 
 ## Creating a Device Client
 
 ```sh
-var WiaSDK = require('wia-sdk');
-var client = new WiaSDK.DeviceClient({
-  token: <YOUR_TOKEN_HERE>
-});
+var Wia = require('wia');
+var deviceClient = new Wia.DeviceClient('<DEVICE_TOKEN>');
 ```
 
 ## Publishing Events
 
 <ul>
-  <li>eventName (required) - String - Name of the event</li>
-  <li>eventData (optional) - Object - Data associated with the event</li>
+  <li>name (required) - String - Name of the event</li>
+  <li>data (optional) - Object - Data associated with the event</li>
   <li>callback (optional) - Function - Callback after the event has been sent</li>
 </ul>
 
 ```sh
-client.publishEvent("Sensor", {
+deviceClient.publishEvent("Sensor", {
     temperature: 14.0
 }, function() {
     console.log("In callback!");
 });
 ```
+
+## Creating a User Client
+
+```sh
+var Wia = require('wia');
+var userClient = new Wia.UserClient('<USER_TOKEN>');
+```
+
+### List Devices
+
+```sh
+userClient.listDevices({}, function(err, devices) {
+  if (err) console.log(err);
+	if (devices) console.log(devices);
+});
+```
+
 
 ## License
 This SDK is distributed under the
