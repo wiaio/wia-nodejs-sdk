@@ -95,7 +95,7 @@ userClient.subscribeToDeviceEvents('<DEVICE_KEY>', function(err, event) {
 });
 ```
 
-### Unsubscribe to Device Events
+### Unsubscribe from Device Events
 
 ```sh
 userClient.unsubscribeToDeviceEvents('<DEVICE_KEY>', function(err) {
