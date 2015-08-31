@@ -13,7 +13,7 @@ npm install wia
 
 ```sh
 var Wia = require('wia');
-var deviceClient = new Wia.DeviceClient('<DEVICE_TOKEN>');
+var deviceClient = new Wia.DeviceClient('<DEVICE_TOKEN>', {});
 ```
 
 ### Publishing Events
@@ -32,13 +32,31 @@ deviceClient.publishEvent("Sensor", {
 });
 ```
 
+### Get Current Device
+
+```sh
+deviceClient.getMe(function(err, device) {
+	if (err) console.log(err);
+	if (device) console.log(device);
+});
+```
+
+### Send a Ping
+
+```sh
+deviceClient.sendPing(function(err, device) {
+	if (err) console.log(err);
+	if (device) console.log(device);
+});
+```
+
 ## User Client
 
 ### Constructor
 
 ```sh
 var Wia = require('wia');
-var userClient = new Wia.UserClient('<USER_TOKEN>');
+var userClient = new Wia.UserClient('<USER_TOKEN>', {});
 ```
 
 ### List Devices
