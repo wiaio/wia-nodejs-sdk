@@ -46,7 +46,7 @@ deviceClient.getMe(function(err, device) {
 ```sh
 deviceClient.sendPing(function(err, device) {
 	if (err) console.log(err);
-	if (device) console.log(device);
+	else console.log("Ping sent!");
 });
 ```
 
