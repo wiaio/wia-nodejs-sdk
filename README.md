@@ -86,6 +86,23 @@ userClient.listDeviceEvents('<DEVICE_KEY>', function(err, events) {
 });
 ```
 
+### Subscribe to Device Events
+
+```sh
+userClient.subscribeToDeviceEvents('<DEVICE_KEY>', function(err, event) {
+	if (err) console.log(err);
+	if (events) console.log(event);
+});
+```
+
+### Unsubscribe to Device Events
+
+```sh
+userClient.unsubscribeToDeviceEvents('<DEVICE_KEY>', function(err) {
+	if (err) console.log(err);
+});
+```
+
 ## License
 This SDK is distributed under the
 [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0),
