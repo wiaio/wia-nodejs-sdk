@@ -7,6 +7,10 @@ To install the Wia SDK for Node.js is to use the npm package manager for Node.js
 npm install wia
 ```
 
+## Documentation
+Visit [http://docs.wia.io/](http://docs.wia.io/)
+
+
 ## Device Client
 
 ### Constructor
