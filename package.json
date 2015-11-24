@@ -1,8 +1,14 @@
 {
   "name": "wia",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "Node.js SDK for Wia",
-  "main": "index.js",
+  "main": "lib/wia.js",
+  "keywords": [
+    "wia",
+    "iot",
+    "cloud",
+    "api"
+  ],
   "scripts": {
     "test": "mocha test"
   },
