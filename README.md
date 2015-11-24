@@ -8,103 +8,12 @@ npm install wia
 ```
 
 ## Documentation
-Visit [http://docs.wia.io/](http://docs.wia.io/)
+For full documentation visit [http://docs.wia.io/](http://docs.wia.io/)
 
 
-## Device Client
-
-### Constructor
-
+## Constructor
 ```sh
-var Wia = require('wia');
-var deviceClient = new Wia.DeviceClient('<DEVICE_TOKEN>', {});
-```
-
-### Publishing Events
-
-<ul>
-  <li>name (required) - String - Name of the event.</li>
-  <li>data (required) - Object - Data associated with the event.</li>
-  <li>callback (optional) - Function - Callback after the event has been sent.</li>
-</ul>
-
-```sh
-deviceClient.publishEvent("Sensor", {
-    temperature: 14.0
-}, function() {
-    console.log("In callback!");
-});
-```
-
-### Get Current Device
-
-```sh
-deviceClient.getMe(function(err, device) {
-	if (err) console.log(err);
-	if (device) console.log(device);
-});
-```
-
-### Send a Ping
-
-```sh
-deviceClient.sendPing(function(err, device) {
-	if (err) console.log(err);
-	else console.log("Ping sent!");
-});
-```
-
-## User Client
-
-### Constructor
-
-```sh
-var Wia = require('wia');
-var userClient = new Wia.UserClient('<USER_TOKEN>', {});
-```
-
-### List Devices
-
-```sh
-userClient.listDevices({}, function(err, devices) {
-	if (err) console.log(err);
-	if (devices) console.log(devices);
-});
-```
-
-### Get a Device
-
-```sh
-userClient.getDevice('<DEVICE_KEY>', function(err, device) {
-	if (err) console.log(err);
-	if (device) console.log(device);
-});
-```
-
-### List Device Event
-
-```sh
-userClient.listDeviceEvents('<DEVICE_KEY>', function(err, events) {
-	if (err) console.log(err);
-	if (events) console.log(events);
-});
-```
-
-### Subscribe to Device Events
-
-```sh
-userClient.subscribeToDeviceEvents('<DEVICE_KEY>', function(err, event) {
-	if (err) console.log(err);
-	if (events) console.log(event);
-});
-```
-
-### Unsubscribe from Device Events
-
-```sh
-userClient.unsubscribeToDeviceEvents('<DEVICE_KEY>', function(err) {
-	if (err) console.log(err);
-});
+var Wia = require('wia')('accessToken')
 ```
 
 ## License
