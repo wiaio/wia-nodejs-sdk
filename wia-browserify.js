@@ -74,6 +74,7 @@ function WiaStream(wia) {
     });
 
     self.mqttClient.on('message', function (topic, message) {
+      console.log(topic);
       try {
         if (topic.indexOf('devices') === 0) {
           var topicSplit = topic.match("devices/(.*?)/(.*)");
@@ -82,6 +83,17 @@ function WiaStream(wia) {
             var topicAction = topicSplit[2];
             var strMsg = message.toString();
             var msgObj = JSON.parse(strMsg);
+
+            if (topicAction.indexOf('/') >= 0) {
+              var topicActionSplit = topicAction.match("(.*?)/(.*)");
+              msgObj.type = topicActionSplit[1];
+            } else {
+              msgObj.type = topicAction;
+            }
+
+            if (self.subscribeCallbacks["devices/" + deviceKey + "/#"] && typeof self.subscribeCallbacks["devices/" + deviceKey + "/#"] === "function") {
+              self.subscribeCallbacks["devices/" + deviceKey + "/#"](msgObj);
+            }
 
             if (self.subscribeCallbacks[topic] && typeof self.subscribeCallbacks[topic] === "function") {
               self.subscribeCallbacks[topic](msgObj);
@@ -397,6 +409,24 @@ function WiaResourceDevices(wia) {
           cb(new Error.WiaRequestException(response.statusCode, body || ""), null);
       }
     });
+  },
+  this.subscribe = function(opt, cb) {
+    if (wia.getApiField('restOnly')) {
+      return cb({message: "restOnly must be set to false to subscribe to events." }, null);
+    }
+    if (!opt.deviceKey) {
+      return cb({message: "deviceKey not specified." }, null);
+    }
+    wia.stream.subscribe('devices/' + opt.deviceKey + '/#', cb);
+  },
+  this.unsubscribe = function(opt, cb) {
+    if (wia.getApiField('restOnly')) {
+      return cb({message: "restOnly must be set to false to subscribe to events." }, null);
+    }
+    if (!opt.deviceKey) {
+      return cb({message: "deviceKey not specified." }, null);
+    }
+    wia.stream.unsubscribe('devices/' + opt.deviceKey + '/#', cb);
   }
 }
 
