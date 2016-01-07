@@ -2,7 +2,7 @@
   "name": "wia",
   "version": "1.1.7",
   "description": "Node.js SDK for Wia",
-  "main": "lib/wia.js",
+  "main": "wia.js",
   "keywords": [
     "wia",
     "iot",

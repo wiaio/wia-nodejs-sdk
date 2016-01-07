@@ -9,7 +9,7 @@ Wia.DEFAULT_MQTT_PROTOCOL = 'mqtts';
 Wia.DEFAULT_MQTT_HOST = 'api.wia.io';
 Wia.DEFAULT_MQTT_PORT = '8883';
 
-Wia.PACKAGE_VERSION = require('../package.json').version;
+Wia.PACKAGE_VERSION = require('./package.json').version;
 
 Wia.USER_AGENT = {
   bindings_version: Wia.PACKAGE_VERSION,
@@ -22,21 +22,21 @@ Wia.USER_AGENT = {
 var exec = require('child_process').exec;
 
 var resources = {
-  Devices: require('./resources/Devices'),
-  Events: require('./resources/Events'),
-  Customers : require('./resources/Customers'),
-  Users : require('./resources/Users'),
-  Organisations : require('./resources/Organisations'),
-  Logs : require('./resources/Logs'),
-  Functions : require('./resources/Functions'),
-  Commands : require('./resources/Commands')
+  Devices: require('./lib/resources/Devices'),
+  Events: require('./lib/resources/Events'),
+  Customers : require('./lib/resources/Customers'),
+  Users : require('./lib/resources/Users'),
+  Organisations : require('./lib/resources/Organisations'),
+  Logs : require('./lib/resources/Logs'),
+  Functions : require('./lib/resources/Functions'),
+  Commands : require('./lib/resources/Commands')
 };
 
 Wia.resources = resources;
 
-var wiaStream = new require('./WiaStream');
+var WiaStream = require('./lib/WiaStream');
 var request = require('request');
-var Error = require('./Error');
+var Error = require('./lib/Error');
 var fs = require('fs');
 var os = require('os');
 
@@ -221,7 +221,7 @@ Wia.prototype = {
   },
 
   _prepStream: function() {
-    this.stream = new wiaStream(this);
+    this.stream = new WiaStream(this);
   }
 };
 
