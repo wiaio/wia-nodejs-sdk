@@ -40,11 +40,11 @@ var Error = require('./lib/Error');
 var fs = require('fs');
 var os = require('os');
 
-function Wia(accessToken, orgSlug) {
+function Wia(opt) {
   var self = this;
 
   if (!(this instanceof Wia)) {
-    return new Wia(accessToken, orgSlug);
+    return new Wia(opt);
   }
   this._api = {
     accessToken: null,
@@ -61,7 +61,7 @@ function Wia(accessToken, orgSlug) {
     enableCommands: true
   };
 
-  if (!accessToken || accessToken.length == 0) {
+  if (!opt || opt.length == 0) {
     var contents = fs.readFileSync(os.homedir() + '/.wia/credentials', 'utf8');
     if (contents) {
       var contentsObj = JSON.parse(contents);
@@ -69,8 +69,14 @@ function Wia(accessToken, orgSlug) {
         this.setAccessToken(contentsObj.default.accessToken);
       }
     }
+  } else if (typeof opt === "string") {
+    this.setAccessToken(opt);
   } else {
-    this.setAccessToken(accessToken);
+    for (var k in opt) {
+      if (opt.hasOwnProperty(k)) {
+         this._api[k] = opt[k];
+      }
+    }
   }
 
   this._prepResources();
@@ -92,7 +98,8 @@ function Wia(accessToken, orgSlug) {
     }
   });
 
-  this.setOrganisationSlug(orgSlug);
+  if (opt.orgSlug)
+    this.setOrganisationSlug(opt.orgSlug);
 }
 
 Wia.prototype = {
