@@ -110,10 +110,10 @@ function Wia(opt) {
               type: os.type()
             }
           });
-
-          if (self.clientInfo.stream)
-            self.stream.connect();
         }
+
+        if (self.getApiField('stream'))
+          self.stream.connect();
       } else {
         throw new Error.WiaRequestException(response.statusCode, body || "");
       }
