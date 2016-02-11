@@ -1,6 +1,6 @@
 {
   "name": "wia",
-  "version": "1.1.15",
+  "version": "1.2.0",
   "description": "Node.js SDK for Wia",
   "main": "wia.js",
   "keywords": [
@@ -27,7 +27,7 @@
   "dependencies": {
     "events": "^1.0.2",
     "mqtt": "^1.7.0",
-    "request": "^2.67.0",
+    "request": "^2.69.0",
     "util": "^0.10.3"
   },
   "devDependencies": {

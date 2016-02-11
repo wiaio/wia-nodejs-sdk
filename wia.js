@@ -25,7 +25,6 @@ var exec = require('child_process').exec;
 var resources = {
   Devices: require('./lib/resources/Devices'),
   Events: require('./lib/resources/Events'),
-  Customers : require('./lib/resources/Customers'),
   Users : require('./lib/resources/Users'),
   Organisations : require('./lib/resources/Organisations'),
   Logs : require('./lib/resources/Logs'),
@@ -49,6 +48,8 @@ function Wia(opt) {
   }
   this._api = {
     accessToken: null,
+    publicKey: null,
+    secretKey: null,
     protocol: Wia.DEFAULT_PROTOCOL,
     host: Wia.DEFAULT_HOST,
     port: Wia.DEFAULT_PORT,
@@ -58,7 +59,7 @@ function Wia(opt) {
     mqttPort: Wia.DEFAULT_MQTT_PORT,
     agent: null,
     dev: false,
-    restOnly: false,
+    stream: true,
     enableCommands: true
   };
 
@@ -67,12 +68,15 @@ function Wia(opt) {
     if (contents) {
       var contentsObj = JSON.parse(contents);
       if (contentsObj.default) {
-        this.setAccessToken(contentsObj.default.accessToken);
+        this.setAccessToken(contentsObj.accessToken || contentsObj.secretKey);
+        this.setPublicKey(contentsObj.publicKey);
       }
     }
   } else if (typeof opt === "string") {
     this.setAccessToken(opt);
   } else {
+    this.setAccessToken(opt.accessToken || opt.secretKey);
+
     for (var k in opt) {
       if (opt.hasOwnProperty(k)) {
          this._api[k] = opt[k];
@@ -83,37 +87,38 @@ function Wia(opt) {
   this._prepResources();
   this._prepStream();
 
-  request.get(self.getApiUrl() + "whoami", {
-    auth: {
-      bearer: self.getApiField('accessToken')
-    },
-    json: true,
-    headers: self.getHeaders()
-  }, function (error, response, body) {
-    if (error) throw new Error.WiaRequestException(0, error);
-    if (response.statusCode == 200) {
-      self.clientInfo = body;
-      if (self.clientInfo.device) {
-        self.devices.update("me", {
-          systemInformation: {
-            arch: os.arch(),
-            cpus: os.cpus(),
-            hostname: os.hostname(),
-            networkInterfaces: os.networkInterfaces(),
-            platform: os.platform(),
-            totalmem: os.totalmem(),
-            type: os.type()
-          }
-        });
-      }
-      self.stream.connect();
-    } else {
-      throw new Error.WiaRequestException(response.statusCode, body || "");
-    }
-  });
+  if (self.getApiField('accessToken')) {
+    request.get(self.getApiUrl() + "whoami", {
+      auth: {
+        bearer: self.getApiField('accessToken')
+      },
+      json: true,
+      headers: self.getHeaders()
+    }, function (error, response, body) {
+      if (error) throw new Error.WiaRequestException(0, error);
+      if (response.statusCode == 200) {
+        self.clientInfo = body;
+        if (self.clientInfo.device) {
+          self.devices.update("me", {
+            systemInformation: {
+              arch: os.arch(),
+              cpus: os.cpus(),
+              hostname: os.hostname(),
+              networkInterfaces: os.networkInterfaces(),
+              platform: os.platform(),
+              totalmem: os.totalmem(),
+              type: os.type()
+            }
+          });
 
-  if (opt.orgSlug)
-    this.setOrganisationSlug(opt.orgSlug);
+          if (self.clientInfo.stream)
+            self.stream.connect();
+        }
+      } else {
+        throw new Error.WiaRequestException(response.statusCode, body || "");
+      }
+    });
+  }
 }
 
 Wia.prototype = {
@@ -161,9 +166,23 @@ Wia.prototype = {
     }
   },
 
-  setOrganisationSlug: function(orgSlug) {
-    if (orgSlug) {
-      this._setApiField('organisationSlug', orgSlug);
+  setPublicKey: function(publicKey) {
+    if (publicKey) {
+      this._setApiField('publicKey', publicKey);
+    }
+  },
+
+  setSecretKey: function(secretKey) {
+    if (secretKey) {
+      this._setApiField('secretKey', secretKey);
+      console.log("INN");
+      this._setApiField('accessToken', secretKey);
+    }
+  },
+
+  setOrganisationSlug: function(organisationSlug) {
+    if (organisationSlug) {
+      this._setApiField('organisationSlug', organisationSlug);
     }
   },
 
@@ -213,6 +232,9 @@ Wia.prototype = {
       if (this.getApiField('organisationSlug')) {
         obj['x-org-slug'] = this.getApiField('organisationSlug');
       }
+    }
+    if (this.getApiField('publicKey')) {
+      obj['x-org-public-key'] = this.getApiField('publicKey');
     }
     return obj;
   },
