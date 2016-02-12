@@ -23,13 +23,14 @@ var os = require('os');
 var exec = require('child_process').exec;
 
 var resources = {
+  Commands : require('./lib/resources/Commands'),
   Devices: require('./lib/resources/Devices'),
   Events: require('./lib/resources/Events'),
-  Users : require('./lib/resources/Users'),
-  Organisations : require('./lib/resources/Organisations'),
-  Logs : require('./lib/resources/Logs'),
   Functions : require('./lib/resources/Functions'),
-  Commands : require('./lib/resources/Commands')
+  Logs : require('./lib/resources/Logs'),
+  Organisations : require('./lib/resources/Organisations'),
+  TeamMembers : require('./lib/resources/TeamMembers'),
+  Users : require('./lib/resources/Users')
 };
 
 Wia.resources = resources;
@@ -63,61 +64,33 @@ function Wia(opt) {
     enableCommands: true
   };
 
+  this._prepResources();
+  this._prepStream();
+
   if (!opt || opt.length == 0) {
-    var contents = fs.readFileSync(os.homedir() + '/.wia/credentials', 'utf8');
+    var contents = fs.readFileSync(os.homedir() + '/.wia/config', 'utf8');
     if (contents) {
       var contentsObj = JSON.parse(contents);
-      if (contentsObj.default) {
+      if (contentsObj) {
+        for (var k in contentsObj) {
+          if (opt.hasOwnProperty(k)) {
+             this._api[k] = contentsObj[k];
+          }
+        }
+
         this.setAccessToken(contentsObj.accessToken || contentsObj.secretKey);
-        this.setPublicKey(contentsObj.publicKey);
       }
     }
-  } else if (typeof opt === "string") {
-    this.setAccessToken(opt);
-  } else {
-    this.setAccessToken(opt.accessToken || opt.secretKey);
-
+  } else if (typeof opt === "object") {
     for (var k in opt) {
       if (opt.hasOwnProperty(k)) {
          this._api[k] = opt[k];
       }
     }
-  }
 
-  this._prepResources();
-  this._prepStream();
-
-  if (self.getApiField('accessToken')) {
-    request.get(self.getApiUrl() + "whoami", {
-      auth: {
-        bearer: self.getApiField('accessToken')
-      },
-      json: true,
-      headers: self.getHeaders()
-    }, function (error, response, body) {
-      if (error) throw new Error.WiaRequestException(0, error);
-      if (response.statusCode == 200) {
-        self.clientInfo = body;
-        if (self.clientInfo.device) {
-          self.devices.update("me", {
-            systemInformation: {
-              arch: os.arch(),
-              cpus: os.cpus(),
-              hostname: os.hostname(),
-              networkInterfaces: os.networkInterfaces(),
-              platform: os.platform(),
-              totalmem: os.totalmem(),
-              type: os.type()
-            }
-          });
-        }
-
-        if (self.getApiField('stream'))
-          self.stream.connect();
-      } else {
-        throw new Error.WiaRequestException(response.statusCode, body || "");
-      }
-    });
+    this.setAccessToken(opt.accessToken || opt.secretKey);
+  } else {
+    this.setAccessToken(opt);
   }
 }
 
@@ -163,6 +136,38 @@ Wia.prototype = {
   setAccessToken: function(accessToken) {
     if (accessToken) {
       this._setApiField('accessToken', accessToken);
+      var self = this;
+
+      request.get(self.getApiUrl() + "whoami", {
+        auth: {
+          bearer: self.getApiField('accessToken')
+        },
+        json: true,
+        headers: self.getHeaders()
+      }, function (error, response, body) {
+        if (error) throw new Error.WiaRequestException(0, error);
+        if (response.statusCode == 200) {
+          self.clientInfo = body;
+          if (self.clientInfo.device) {
+            self.devices.update("me", {
+              systemInformation: {
+                arch: os.arch(),
+                cpus: os.cpus(),
+                hostname: os.hostname(),
+                networkInterfaces: os.networkInterfaces(),
+                platform: os.platform(),
+                totalmem: os.totalmem(),
+                type: os.type()
+              }
+            });
+          }
+
+          if (self.getApiField('stream'))
+            self.stream.connect();
+        } else {
+          throw new Error.WiaRequestException(response.statusCode, body || "");
+        }
+      });
     }
   },
 
