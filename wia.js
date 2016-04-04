@@ -47,6 +47,7 @@ function Wia(opt) {
   if (!(this instanceof Wia)) {
     return new Wia(opt);
   }
+  
   this._api = {
     accessToken: null,
     publicKey: null,
@@ -180,7 +181,6 @@ Wia.prototype = {
   setSecretKey: function(secretKey) {
     if (secretKey) {
       this._setApiField('secretKey', secretKey);
-      console.log("INN");
       this._setApiField('accessToken', secretKey);
     }
   },
