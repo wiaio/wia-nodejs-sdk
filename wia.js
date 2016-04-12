@@ -47,7 +47,7 @@ function Wia(opt) {
   if (!(this instanceof Wia)) {
     return new Wia(opt);
   }
-  
+
   this._api = {
     accessToken: null,
     publicKey: null,
@@ -138,37 +138,39 @@ Wia.prototype = {
     if (accessToken) {
       this._setApiField('accessToken', accessToken);
       var self = this;
+      if (self.getApiField('stream'))
+        self.stream.connect();
 
-      request.get(self.getApiUrl() + "whoami", {
-        auth: {
-          bearer: self.getApiField('accessToken')
-        },
-        json: true,
-        headers: self.getHeaders()
-      }, function (error, response, body) {
-        if (error) throw new Error.WiaRequestException(0, error);
-        if (response.statusCode == 200) {
-          self.clientInfo = body;
-          if (self.clientInfo.device) {
-            self.devices.update("me", {
-              systemInformation: {
-                arch: os.arch(),
-                cpus: os.cpus(),
-                hostname: os.hostname(),
-                networkInterfaces: os.networkInterfaces(),
-                platform: os.platform(),
-                totalmem: os.totalmem(),
-                type: os.type()
-              }
-            });
-          }
-
-          if (self.getApiField('stream'))
-            self.stream.connect();
-        } else {
-          throw new Error.WiaRequestException(response.statusCode, body || "");
-        }
-      });
+      // request.get(self.getApiUrl() + "whoami", {
+      //   auth: {
+      //     bearer: self.getApiField('accessToken')
+      //   },
+      //   json: true,
+      //   headers: self.getHeaders()
+      // }, function (error, response, body) {
+      //   if (error) throw new Error.WiaRequestException(0, error);
+      //   if (response.statusCode == 200) {
+      //     self.clientInfo = body;
+      //     if (self.clientInfo.device) {
+      //       self.devices.update("me", {
+      //         systemInformation: {
+      //           arch: os.arch(),
+      //           cpus: os.cpus(),
+      //           hostname: os.hostname(),
+      //           networkInterfaces: os.networkInterfaces(),
+      //           platform: os.platform(),
+      //           totalmem: os.totalmem(),
+      //           type: os.type()
+      //         }
+      //       });
+      //     }
+      //
+      //     if (self.getApiField('stream'))
+      //       self.stream.connect();
+      //   } else {
+      //     throw new Error.WiaRequestException(response.statusCode, body || "");
+      //   }
+      // });
     }
   },
 
