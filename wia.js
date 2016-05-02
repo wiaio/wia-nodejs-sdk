@@ -155,7 +155,6 @@ Wia.prototype = {
   },
 
   getApiUrl: function() {
-    console.log(this.getApiField('rest', 'protocol') + "://" + this.getApiField('rest', 'host') + ":" + this.getApiField('rest', 'port') + this.getApiField('rest', 'basePath'));
     return this.getApiField('rest', 'protocol') + "://" + this.getApiField('rest', 'host') + ":" + this.getApiField('rest', 'port') + this.getApiField('rest', 'basePath');
   },
 
