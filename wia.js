@@ -52,15 +52,19 @@ function Wia(opt) {
     accessToken: null,
     publicKey: null,
     secretKey: null,
-    protocol: Wia.DEFAULT_PROTOCOL,
-    host: Wia.DEFAULT_HOST,
-    port: Wia.DEFAULT_PORT,
-    basePath: Wia.DEFAULT_BASE_PATH,
-    mqttProtocol: Wia.DEFAULT_MQTT_PROTOCOL,
-    mqttHost: Wia.DEFAULT_MQTT_HOST,
-    mqttPort: Wia.DEFAULT_MQTT_PORT,
+    rest: {
+      host: Wia.DEFAULT_HOST,
+      port: Wia.DEFAULT_PORT,
+      protocol: Wia.DEFAULT_PROTOCOL,
+      basePath: Wia.DEFAULT_BASE_PATH
+    },
+    mqtt: {
+      host: Wia.DEFAULT_MQTT_HOST,
+      port: Wia.DEFAULT_MQTT_HOST,
+      protocol: Wia.DEFAULT_MQTT_HOST
+    },
     agent: null,
-    dev: false,
+    debug: false,
     stream: true,
     enableCommands: true
   };
@@ -102,120 +106,57 @@ Wia.prototype = {
     }
   },
 
-  setHost: function(host, port, protocol) {
-    this._setApiField('host', host);
-    if (port) this.setPort(port);
-    if (protocol) this.setProtocol(protocol);
-  },
-
-  setPort: function(port) {
-    this._setApiField('port', port);
-  },
-
-  setProtocol: function(protocol) {
-    this._setApiField('protocol', protocol);
-  },
-
-  setMqttHost: function(mqttHost, mqttPort, mqttProtocol) {
-    this._setApiField('mqttHost', mqttHost);
-    if (mqttPort) this.setMqttPort(mqttPort);
-    if (mqttProtocol) this.setMqttProtocol(mqttProtocol);
-  },
-
-  setMqttPort: function(mqttPort) {
-    this._setApiField('mqttPort', mqttPort);
-  },
-
-  setMqttProtocol: function(mqttProtocol) {
-    this._setApiField('mqttProtocol', mqttProtocol);
-  },
-
-  setRestOnly: function(restOnly) {
-    this._setApiField('restOnly', restOnly);
-  },
-
   setAccessToken: function(accessToken) {
     if (accessToken) {
       this._setApiField('accessToken', accessToken);
       var self = this;
-      if (self.getApiField('stream'))
-        self.stream.connect();
+      request.get(self.getApiUrl() + "whoami", {
+        auth: {
+          bearer: self.getApiField('accessToken')
+        },
+        json: true,
+        headers: self.getHeaders()
+      }, function (error, response, body) {
+        if (error) throw new Error.WiaRequestException(0, error);
+        if (response.statusCode == 200) {
+          self.clientInfo = body;
+          if (self.clientInfo.device) {
+            self.devices.update("me", {
+              systemInformation: {
+                arch: os.arch(),
+                cpus: os.cpus(),
+                hostname: os.hostname(),
+                networkInterfaces: os.networkInterfaces(),
+                platform: os.platform(),
+                totalmem: os.totalmem(),
+                type: os.type()
+              }
+            });
+          }
 
-      // request.get(self.getApiUrl() + "whoami", {
-      //   auth: {
-      //     bearer: self.getApiField('accessToken')
-      //   },
-      //   json: true,
-      //   headers: self.getHeaders()
-      // }, function (error, response, body) {
-      //   if (error) throw new Error.WiaRequestException(0, error);
-      //   if (response.statusCode == 200) {
-      //     self.clientInfo = body;
-      //     if (self.clientInfo.device) {
-      //       self.devices.update("me", {
-      //         systemInformation: {
-      //           arch: os.arch(),
-      //           cpus: os.cpus(),
-      //           hostname: os.hostname(),
-      //           networkInterfaces: os.networkInterfaces(),
-      //           platform: os.platform(),
-      //           totalmem: os.totalmem(),
-      //           type: os.type()
-      //         }
-      //       });
-      //     }
-      //
-      //     if (self.getApiField('stream'))
-      //       self.stream.connect();
-      //   } else {
-      //     throw new Error.WiaRequestException(response.statusCode, body || "");
-      //   }
-      // });
+          if (self.getApiField('stream'))
+            self.stream.connect();
+        } else {
+          throw new Error.WiaRequestException(response.statusCode, body || "");
+        }
+      });
     }
-  },
-
-  setPublicKey: function(publicKey) {
-    if (publicKey) {
-      this._setApiField('publicKey', publicKey);
-    }
-  },
-
-  setSecretKey: function(secretKey) {
-    if (secretKey) {
-      this._setApiField('secretKey', secretKey);
-      this._setApiField('accessToken', secretKey);
-    }
-  },
-
-  setOrganisationSlug: function(organisationSlug) {
-    if (organisationSlug) {
-      this._setApiField('organisationSlug', organisationSlug);
-    }
-  },
-
-  setDev: function(dev) {
-    this._setApiField('dev', dev);
-  },
-
-  setEnableCommands: function(enableCommands) {
-    this._setApiField('enableCommands', enableCommands);
   },
 
   _setApiField: function(key, value) {
     this._api[key] = value;
   },
 
-  getApiField: function(key) {
+  getApiField: function(key, subkey) {
+    if (subkey) {
+      return this._api[key][subkey];
+    }
     return this._api[key];
   },
 
   getApiUrl: function() {
-    if (!this.getApiField('dev')) {
-      if (this.getApiField('organisationSlug')) {
-        return this.getApiField('protocol') + "://" + this.getApiField('organisationSlug') + ".wia.io:" + this.getApiField('port') + "/api" + this.getApiField('basePath');
-      }
-    }
-    return this.getApiField('protocol') + "://" + this.getApiField('host') + ":" + this.getApiField('port') + this.getApiField('basePath');
+    console.log(this.getApiField('rest', 'protocol') + "://" + this.getApiField('rest', 'host') + ":" + this.getApiField('rest', 'port') + this.getApiField('rest', 'basePath'));
+    return this.getApiField('rest', 'protocol') + "://" + this.getApiField('rest', 'host') + ":" + this.getApiField('rest', 'port') + this.getApiField('rest', 'basePath');
   },
 
   getConstant: function(c) {
@@ -235,11 +176,6 @@ Wia.prototype = {
 
   getHeaders: function() {
     var obj = {};
-    if (this.getApiField('dev')) {
-      if (this.getApiField('organisationSlug')) {
-        obj['x-org-slug'] = this.getApiField('organisationSlug');
-      }
-    }
     if (this.getApiField('publicKey')) {
       obj['x-org-public-key'] = this.getApiField('publicKey');
     }
