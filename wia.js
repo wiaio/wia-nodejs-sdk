@@ -120,6 +120,7 @@ Wia.prototype = {
         if (error) throw new Error.WiaRequestException(0, error);
         if (response.statusCode == 200) {
           self.clientInfo = body;
+
           if (self.clientInfo.device) {
             self.devices.update("me", {
               systemInformation: {
@@ -131,6 +132,8 @@ Wia.prototype = {
                 totalmem: os.totalmem(),
                 type: os.type()
               }
+            }, function(err, data) {
+              if (err) console.log(err);
             });
           }
 
