@@ -27,6 +27,7 @@ var resources = {
   Devices: require('./lib/resources/Devices'),
   Events: require('./lib/resources/Events'),
   Functions : require('./lib/resources/Functions'),
+  Locations : require('./lib/resources/Locations'),
   Logs : require('./lib/resources/Logs'),
   Organisations : require('./lib/resources/Organisations'),
   TeamMembers : require('./lib/resources/TeamMembers'),
