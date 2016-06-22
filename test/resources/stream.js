@@ -46,8 +46,8 @@ describe('Stream', function () {
           }
         });
 
-        wia.stream.on("close", function() {
-          console.log("Stream got closed!");
+        wia.stream.on("disconnect", function() {
+          console.log("Stream got disconnected!");
           done();
         });
 
