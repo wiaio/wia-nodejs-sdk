@@ -5,9 +5,9 @@ Wia.DEFAULT_HOST = 'api.wia.io';
 Wia.DEFAULT_PORT = '443';
 Wia.DEFAULT_BASE_PATH = '/v1/';
 
-Wia.DEFAULT_MQTT_PROTOCOL = 'mqtts';
-Wia.DEFAULT_MQTT_HOST = 'api.wia.io';
-Wia.DEFAULT_MQTT_PORT = '8883';
+Wia.DEFAULT_STREAM_PROTOCOL = 'mqtts';
+Wia.DEFAULT_STREAM_HOST = 'api.wia.io';
+Wia.DEFAULT_STREAM_PORT = '8883';
 
 Wia.PACKAGE_VERSION = require('./package.json').version;
 
@@ -60,14 +60,13 @@ function Wia(opt) {
       protocol: Wia.DEFAULT_PROTOCOL,
       basePath: Wia.DEFAULT_BASE_PATH
     },
-    mqtt: {
-      host: Wia.DEFAULT_MQTT_HOST,
-      port: Wia.DEFAULT_MQTT_HOST,
-      protocol: Wia.DEFAULT_MQTT_HOST
+    stream: {
+      protocol: Wia.DEFAULT_STREAM_PROTOCOL,
+      host: Wia.DEFAULT_STREAM_HOST,
+      port: Wia.DEFAULT_STREAM_PORT
     },
     agent: null,
     debug: false,
-    stream: true,
     enableCommands: true
   };
 
@@ -138,9 +137,6 @@ Wia.prototype = {
               if (err) console.log(err);
             });
           }
-
-          if (self.getApiField('stream'))
-            self.stream.connect();
         } else {
           throw new Error.WiaRequestException(response.statusCode, body || "");
         }
