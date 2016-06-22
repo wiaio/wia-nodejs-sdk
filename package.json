@@ -25,14 +25,14 @@
   },
   "homepage": "https://github.com/wiaio/wia-nodejs-sdk",
   "dependencies": {
-    "events": "^1.0.2",
-    "mqtt": "^1.7.0",
-    "request": "^2.69.0",
+    "events": "^1.1.0",
+    "mqtt": "^1.11.2",
+    "request": "^2.72.0",
     "util": "^0.10.3"
   },
   "devDependencies": {
-    "chai": "^3.2.0",
-    "mocha": "^2.2.5"
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
   },
   "directories": {
     "test": "test"
