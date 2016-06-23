@@ -19,7 +19,7 @@ var wia = require('wia')('accessToken')
 ## License
 This SDK is distributed under the the MIT License
 
-Copyright (c) 2010-2015 Wia Limited. http://wia.io
+Copyright (c) 2010-2016 Wia Technologies Limited. http://wia.io
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

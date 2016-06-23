@@ -101,12 +101,6 @@ function Wia(opt) {
 }
 
 Wia.prototype = {
-  connectToStream: function() {
-    if (this.stream) {
-      this.stream.connectToStream();
-    }
-  },
-
   setAccessToken: function(accessToken) {
     if (accessToken) {
       this._setApiField('accessToken', accessToken);
