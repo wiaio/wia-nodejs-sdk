@@ -54,6 +54,7 @@ function Wia(opt) {
     accessToken: null,
     publicKey: null,
     secretKey: null,
+    appKey: null,
     rest: {
       host: Wia.DEFAULT_HOST,
       port: Wia.DEFAULT_PORT,
