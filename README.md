@@ -1,6 +1,5 @@
 # Wia SDK for Node.js
 [![Build Status](https://travis-ci.org/wiaio/wia-nodejs-sdk.svg?branch=master)](https://travis-ci.org/wiaio/wia-nodejs-sdk)
-[![Coverage Status](https://coveralls.io/repos/wiaio/wia-nodejs-sdk/badge.svg)](https://coveralls.io/r/wiaio/wia-nodejs-sdk)
 
 ## Installing
 To install the Wia SDK for Node.js is to use the npm package manager for Node.js. Simply type the following into a terminal window:
