@@ -17,11 +17,8 @@ describe('Device', function () {
       wia.devices.create({
         name: deviceName
       }, function(error, device) {
-        expect(error).to.be.a.null;
-        expect(device).to.not.be.a.null;
-        expect(device.name).to.equal(deviceName);
-        expect(device.id).to.not.be.a.null;
-
+        expect(error).to.not.exist;
+        expect(device).to.exist;
         done();
       });
     });
@@ -33,10 +30,8 @@ describe('Device', function () {
       wia.devices.create({
         name: deviceName
       }, function(error, createdDevice) {
-        expect(error).to.be.a.null;
-        expect(createdDevice).to.not.be.a.null;
-        expect(createdDevice.name).to.equal(deviceName);
-        expect(createdDevice.id).to.not.be.a.null;
+        expect(error).to.not.exist;
+        expect(createdDevice).to.exist;
 
         wia.devices.retrieve(createdDevice.id, function(error, retrievedDevice) {
           expect(error).to.be.a.null;
@@ -55,15 +50,15 @@ describe('Device', function () {
       wia.devices.create({
         name: deviceName
       }, function(error, createdDevice) {
-        expect(error).to.be.a.null;
-        expect(createdDevice).to.not.be.a.null;
+        expect(error).to.not.exist;
+        expect(createdDevice).to.exist;
 
         var newDeviceName = "Device " + new Date().getTime();
         wia.devices.update(createdDevice.id, {
             name: newDeviceName
           }, function(error, updatedDevice) {
-            expect(error).to.be.a.null;
-            expect(updatedDevice).to.not.be.a.null;
+            expect(error).to.not.exist;
+            expect(updatedDevice).to.exist;
             expect(updatedDevice.name).to.equal(newDeviceName);
 
             done();
@@ -78,16 +73,15 @@ describe('Device', function () {
       wia.devices.create({
         name: deviceName
       }, function(error, device) {
-        expect(error).to.be.a.null;
-        expect(device).to.not.be.a.null;
+        expect(error).to.not.exist;
+        expect(device).to.exist;
 
         wia.devices.delete(device.id, function(error, deleted) {
-            expect(error).to.be.a.null;
-            expect(deleted).to.not.be.a.null;
-            expect(deleted).to.be.true;
+          expect(error).to.not.exist;
+          expect(deleted).to.exist;
 
-            done();
-          });
+          done();
+        });
       });
     });
   });
@@ -99,11 +93,11 @@ describe('Device', function () {
         limit: 20,
         page: 0
       }, function(error, data) {
-        expect(error).to.be.a.null;
-        expect(data).to.not.be.a.null;
-        expect(data.devices).to.not.be.a.null;
+        expect(error).to.not.exist;
+        expect(data).to.exist;
+        expect(data.devices).to.exist;
         expect(data.devices).to.be.instanceof(Array);
-        expect(data.count).to.not.be.a.null;
+        expect(data.count).to.exist;
         expect(data.count).to.be.a('number');
         done();
       });
