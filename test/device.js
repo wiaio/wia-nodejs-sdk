@@ -2,6 +2,7 @@
 
 var expect = require('chai').expect;
 var testUtils = require('./testUtils');
+var Wia = require('../wia');
 var wia = require('../wia')({
   secretKey: testUtils.getUserSecretKey()
 });
@@ -9,6 +10,47 @@ var wia = require('../wia')({
 describe('Device', function () {
   before(function (done) {
       done();
+  });
+
+  describe('#createInstanceOfWiaDeviceSecretKey', function () {
+    it('should create an instance of wia using a device secret key', function (done) {
+      var wiaDevice = new Wia(testUtils.getDeviceSecretKey());
+      wiaDevice.whoami(function(error, data) {
+        expect(error).to.not.exist;
+        expect(data).to.exist;
+        done();
+      });
+    });
+  });
+
+  // describe('#createInstanceOfWiaBadDeviceSecretKey', function () {
+  //   it('should create an instance of wia using only a bad device secret key', function (done) {
+  //     var wiaDevice = new Wia("abcdef");
+  //     wiaDevice.whoami(function(error, data) {
+  //       expect(error).to.exist;
+  //       done();
+  //     });
+  //   });
+  // });
+
+  describe('#createInstanceOfWiaInvalidRestHost', function () {
+    it('should create an instance of wia using an invalid rest host', function (done) {
+      var wiaDevice = new Wia({
+        rest: {
+          protocol: "https",
+          host: "doesnotexist.wia.io",
+          port: "443",
+          basePath: "/v1/"
+        },
+        secretKey: testUtils.getDeviceSecretKey()
+      });
+
+      wiaDevice.whoami(function(error, data) {
+        expect(error).to.exist;
+        expect(data).to.not.exist;
+        done();
+      });
+    });
   });
 
   describe('#createADevice', function () {
@@ -34,10 +76,9 @@ describe('Device', function () {
         expect(createdDevice).to.exist;
 
         wia.devices.retrieve(createdDevice.id, function(error, retrievedDevice) {
-          expect(error).to.be.a.null;
-          expect(retrievedDevice).to.not.be.a.null;
+          expect(error).to.not.exist;
+          expect(retrievedDevice).to.exist;
           expect(createdDevice.id).to.equal(retrievedDevice.id);
-
           done();
         });
       });
@@ -99,6 +140,40 @@ describe('Device', function () {
         expect(data.devices).to.be.instanceof(Array);
         expect(data.count).to.exist;
         expect(data.count).to.be.a('number');
+        done();
+      });
+    });
+  });
+
+  describe('#createADeviceNoParameters', function () {
+    it('should fail to create a device due to no parameters being sent', function (done) {
+      wia.devices.create(null, function(error, device) {
+        expect(error).to.exist;
+        expect(device).to.not.exist;
+        done();
+      });
+    });
+  });
+
+  describe('#createADeviceInvalidName', function () {
+    it('should fail to create a device due to invalid name parameter being sent', function (done) {
+      var deviceObj = {
+        name: null
+      };
+
+      wia.devices.create(deviceObj, function(error, device) {
+        expect(error).to.exist;
+        expect(device).to.not.exist;
+        done();
+      });
+    });
+  });
+
+  describe('#retrieveADeviceNoParameters', function () {
+    it('should fail to retrieve a device due to no parameters being sent', function (done) {
+      wia.devices.retrieve(null, function(error, device) {
+        expect(error).to.exist;
+        expect(device).to.not.exist;
         done();
       });
     });

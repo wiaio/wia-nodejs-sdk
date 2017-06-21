@@ -1,5 +1,8 @@
 'use strict';
 
+var os = require('os');
+var exec = require('child_process').exec;
+
 Wia.DEFAULT_PROTOCOL = 'https';
 Wia.DEFAULT_HOST = 'api.wia.io';
 Wia.DEFAULT_PORT = '443';
@@ -8,6 +11,8 @@ Wia.DEFAULT_BASE_PATH = '/v1/';
 Wia.DEFAULT_STREAM_PROTOCOL = 'mqtts';
 Wia.DEFAULT_STREAM_HOST = 'api.wia.io';
 Wia.DEFAULT_STREAM_PORT = '8883';
+
+Wia.DEFAULT_CONFIG_FILE_PATH = os.homedir() + '/.wia/config';
 
 Wia.PACKAGE_VERSION = require('./package.json').version;
 
@@ -18,9 +23,6 @@ Wia.USER_AGENT = {
   platform: process.platform,
   publisher: 'wia'
 };
-
-var os = require('os');
-var exec = require('child_process').exec;
 
 var resources = {
   Commands : require('./lib/resources/Commands'),
@@ -39,7 +41,7 @@ Wia.resources = resources;
 
 var WiaStream = require('./lib/WiaStream');
 var request = require('request');
-var Error = require('./lib/Error');
+var WiaExceptions = require('./lib/WiaExceptions');
 var fs = require('fs');
 var os = require('os');
 
@@ -52,7 +54,6 @@ function Wia(opt) {
 
   this._api = {
     accessToken: null,
-    publicKey: null,
     secretKey: null,
     appKey: null,
     rest: {
@@ -75,17 +76,20 @@ function Wia(opt) {
   this._prepStream();
 
   if (!opt || opt.length == 0) {
-    var contents = fs.readFileSync(os.homedir() + '/.wia/config', 'utf8');
-    if (contents) {
-      var contentsObj = JSON.parse(contents);
-      if (contentsObj) {
-        for (var k in contentsObj) {
-          if (opt.hasOwnProperty(k)) {
-             this._api[k] = contentsObj[k];
+    var configFilePath = process.env.WIA_CONFIG_FILE_PATH || Wia.DEFAULT_CONFIG_FILE_PATH;
+    if (fs.existsSync(configFilePath)) {
+      var contents = fs.readFileSync(configFilePath, 'utf8');
+      if (contents) {
+        var contentsObj = JSON.parse(contents);
+        if (contentsObj) {
+          for (var k in contentsObj) {
+            if (opt.hasOwnProperty(k)) {
+               this._api[k] = contentsObj[k];
+            }
           }
-        }
 
-        this.setAccessToken(contentsObj.accessToken || contentsObj.secretKey);
+          this.setAccessToken(contentsObj.accessToken || contentsObj.secretKey);
+        }
       }
     }
   } else if (typeof opt === "object") {
@@ -113,7 +117,10 @@ Wia.prototype = {
         json: true,
         headers: self.getHeaders()
       }, function (error, response, body) {
-        if (error) throw new Error.WiaRequestException(0, error);
+        if (error) {
+          console.log(error);
+        }
+
         if (response.statusCode == 200) {
           self.clientInfo = body;
 
@@ -128,12 +135,8 @@ Wia.prototype = {
                 totalmem: os.totalmem(),
                 type: os.type()
               }
-            }, function(err, data) {
-              if (err) console.log(err);
             });
           }
-        } else {
-          throw new Error.WiaRequestException(response.statusCode, body || "");
         }
       });
     }
@@ -154,10 +157,6 @@ Wia.prototype = {
     return this.getApiField('rest', 'protocol') + "://" + this.getApiField('rest', 'host') + ":" + this.getApiField('rest', 'port') + this.getApiField('rest', 'basePath');
   },
 
-  getConstant: function(c) {
-    return Wia[c];
-  },
-
   getClientUserAgent: function(cb) {
     if (Wia.USER_AGENT_SERIALIZED) {
       return cb(Wia.USER_AGENT_SERIALIZED);
@@ -171,8 +170,8 @@ Wia.prototype = {
 
   getHeaders: function() {
     var obj = {};
-    if (this.getApiField('publicKey')) {
-      obj['x-org-public-key'] = this.getApiField('publicKey');
+    if (this.getApiField('appKey')) {
+      obj['x-org-app-key'] = this.getApiField('appKey');
     }
     return obj;
   },
@@ -185,10 +184,33 @@ Wia.prototype = {
     }, function (error, response, body) {
       if (cb) {
         if (error) return cb(error, null);
-        if (response.statusCode)
+        if (response.statusCode === 200 || response.statusCode === 201)
           cb(null, body);
         else
-          cb(new Error.WiaRequestException(response.statusCode, body || ""), null);
+          cb(new WiaExceptions.WiaRequestException(response.statusCode, body || ""), null);
+      }
+    });
+  },
+
+  whoami: function(cb) {
+    request.get(this.getApiUrl() + "whoami", {
+      json: true,
+      auth: {
+        bearer: this.getApiField('accessToken')
+      }
+    }, function (error, response, body) {
+      if (cb) {
+        if (error) {
+          return cb(error, null);
+        }
+
+        if (response) {
+          if (response.statusCode === 200) {
+            return cb(null, body);
+          } else {
+            return cb(new WiaExceptions.WiaRequestException(response.statusCode, body || ""), null);
+          }
+        }
       }
     });
   },

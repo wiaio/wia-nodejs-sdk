@@ -1,6 +1,14 @@
 'use strict';
 
 var utils = module.exports = {
+  getUserUsername: function() {
+    var key = process.env.WIA_TEST_USER_USERNAME;
+    return key;
+  },
+  getUserPassword: function() {
+    var key = process.env.WIA_TEST_USER_PASSWORD;
+    return key;
+  },
   getUserSecretKey: function() {
     var key = process.env.WIA_TEST_USER_SECRET_KEY;
     return key;

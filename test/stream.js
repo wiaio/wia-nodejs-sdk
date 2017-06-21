@@ -23,7 +23,6 @@ describe('Stream', function () {
     it('should connect to the stream', function (done) {
       var doneCalled = false;
       wia.stream.on("connect", function() {
-        console.log("Stream got connected!");
         if (!doneCalled) {
           doneCalled = true;
           done();
@@ -38,16 +37,13 @@ describe('Stream', function () {
       var disconnectCalled = false;
 
       wia.stream.on("connect", function() {
-        console.log("Stream got connected!");
         if (!disconnectCalled) {
-          console.log("Calling disconnect.");
           disconnectCalled = true;
           wia.stream.disconnect();
         }
       });
 
       wia.stream.on("disconnect", function() {
-        console.log("Stream got disconnected!");
         done();
       });
 
