@@ -3,6 +3,7 @@
 var expect = require('chai').expect;
 var testUtils = require('./testUtils');
 var wia = require('../wia')({
+  accessToken: testUtils.getDeviceSecretKey(),
   stream: testUtils.getStreamConfig()
 });
 
