@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 var testUtils = require('./testUtils');
 var Wia = require('../wia');
 var wia = require('../wia')({
-  secretKey: testUtils.getUserSecretKey()
+  secretKey: testUtils.getDeviceSecretKey()
 });
 
 describe('Device', function () {
