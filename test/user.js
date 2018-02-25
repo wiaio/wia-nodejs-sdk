@@ -9,17 +9,6 @@ describe('User', function () {
       done();
   });
 
-  describe('#createInstanceOfWiaUserSecretKey', function () {
-    it('should create an instance of wia using a user secret key', function (done) {
-      var wiaUser = new Wia(testUtils.getUserSecretKey());
-      wiaUser.whoami(function(error, data) {
-        expect(error).to.not.exist;
-        expect(data).to.exist;
-        done();
-      });
-    });
-  });
-
   describe('#createInstanceOfWiaBadUserSecretKey', function () {
     it('should create an instance of wia using a bad user secret key', function (done) {
       var wiaUser = new Wia("usr_sk_abc123");
