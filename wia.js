@@ -8,9 +8,9 @@ Wia.DEFAULT_HOST = 'api.wia.io';
 Wia.DEFAULT_PORT = '443';
 Wia.DEFAULT_BASE_PATH = '/v1/';
 
-Wia.DEFAULT_STREAM_PROTOCOL = 'mqtts';
+Wia.DEFAULT_STREAM_PROTOCOL = 'mqtt';
 Wia.DEFAULT_STREAM_HOST = 'api.wia.io';
-Wia.DEFAULT_STREAM_PORT = '8883';
+Wia.DEFAULT_STREAM_PORT = '1883';
 
 Wia.DEFAULT_CONFIG_FILE_PATH = os.homedir() + '/.wia/config';
 
@@ -123,20 +123,6 @@ Wia.prototype = {
 
         if (response.statusCode == 200) {
           self.clientInfo = body;
-
-          if (self.clientInfo.device) {
-            self.devices.update("me", {
-              systemInformation: {
-                arch: os.arch(),
-                cpus: os.cpus(),
-                hostname: os.hostname(),
-                networkInterfaces: os.networkInterfaces(),
-                platform: os.platform(),
-                totalmem: os.totalmem(),
-                type: os.type()
-              }
-            });
-          }
         }
       });
     }

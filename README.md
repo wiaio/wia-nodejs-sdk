@@ -11,12 +11,10 @@ npm install wia
 ## Documentation
 For full documentation visit [http://docs.wia.io/](http://docs.wia.io/)
 
-
 ## Constructor
 ```sh
 var wia = require('wia')('accessToken')
 ```
-
 ## License
 This SDK is distributed under the the MIT License
 
