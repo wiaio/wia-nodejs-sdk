@@ -13,6 +13,10 @@ var utils = module.exports = {
     var key = process.env.WIA_TEST_DEVICE_SECRET_KEY;
     return key;
   },
+  getAppKey: function() {
+        var key = process.env.WIA_TEST_APP_KEY;
+        return key;
+    },
   getStreamConfig: function() {
     return {
       protocol: process.env.WIA_TEST_STREAM_PROTOCOL || "mqtt",

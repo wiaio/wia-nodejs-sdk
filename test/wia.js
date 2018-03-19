@@ -17,7 +17,7 @@ describe('Wia', function () {
 
       var headers = wia.getHeaders();
       expect(headers).to.exist;
-      expect(headers['x-org-app-key']).to.exist;
+      expect(headers['x-app-key']).to.exist;
       done();
     });
   });
