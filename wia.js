@@ -31,6 +31,10 @@ var resources = {
   Functions : require('./lib/resources/Functions'),
   Locations : require('./lib/resources/Locations'),
   Logs : require('./lib/resources/Logs'),
+<<<<<<< HEAD
+=======
+  Spaces : require('./lib/resources/Spaces'),
+>>>>>>> origin/master
   Users : require('./lib/resources/Users')
 };
 
@@ -154,7 +158,7 @@ Wia.prototype = {
   getHeaders: function() {
     var obj = {};
     if (this.getApiField('appKey')) {
-      obj['x-org-app-key'] = this.getApiField('appKey');
+      obj['x-app-key'] = this.getApiField('appKey');
     }
     return obj;
   },
@@ -167,8 +171,9 @@ Wia.prototype = {
     }, function (error, response, body) {
       if (cb) {
         if (error) return cb(error, null);
-        if (response.statusCode === 200 || response.statusCode === 201)
+        if (response.statusCode === 200 || response.statusCode === 201) {
           cb(null, body);
+        }
         else
           cb(new WiaExceptions.WiaRequestException(response.statusCode, body || ""), null);
       }
