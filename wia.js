@@ -31,10 +31,6 @@ var resources = {
   Functions : require('./lib/resources/Functions'),
   Locations : require('./lib/resources/Locations'),
   Logs : require('./lib/resources/Logs'),
-<<<<<<< HEAD
-=======
-  Spaces : require('./lib/resources/Spaces'),
->>>>>>> origin/master
   Users : require('./lib/resources/Users')
 };
 
