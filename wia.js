@@ -31,9 +31,6 @@ var resources = {
   Functions : require('./lib/resources/Functions'),
   Locations : require('./lib/resources/Locations'),
   Logs : require('./lib/resources/Logs'),
-  Organisations : require('./lib/resources/Organisations'),
-  Sensors : require('./lib/resources/Sensors'),
-  TeamMembers : require('./lib/resources/TeamMembers'),
   Users : require('./lib/resources/Users')
 };
 

@@ -1,8 +1,8 @@
 'use strict';
 
-var expect = require('chai').expect;
-var testUtils = require('./testUtils');
-var Wia = require('../wia');
+const expect = require('chai').expect;
+const testUtils = require('./testUtils');
+const Wia = require('../wia');
 
 describe('Wia', function () {
   before(function (done) {
