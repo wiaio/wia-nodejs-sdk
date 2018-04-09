@@ -69,7 +69,7 @@ describe('Commands', function () {
           },
           json: true
         });
-      }, 3000);
+      }, 2000);
     });
   });
 
