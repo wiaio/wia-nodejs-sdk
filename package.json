@@ -38,9 +38,9 @@
     "coveralls": "^3.0.0",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.5.5",
-    "mocha": "^5.0.5",
+    "mocha": "^4.0.1",
     "mocha-lcov-reporter": "^1.3.0",
-    "nyc": "^11.6.0"
+    "nyc": "^11.2.1"
   },
   "directories": {
     "test": "test"
