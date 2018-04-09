@@ -1,12 +1,20 @@
 'use strict';
 
 var utils = module.exports = {
+  getUserAccessToken: function() {
+    var key = process.env.USER_ACCESS_TOKEN;
+    return key;
+  },
   getUserUsername: function() {
-    var key = process.env.WUSER_USERNAME;
+    var key = process.env.USER_USERNAME;
     return key;
   },
   getUserPassword: function() {
     var key = process.env.USER_PASSWORD;
+    return key;
+  },
+  getDeviceId: function() {
+    var key = process.env.DEVICE_ID;
     return key;
   },
   getDeviceSecretKey: function() {
@@ -14,9 +22,9 @@ var utils = module.exports = {
     return key;
   },
   getAppKey: function() {
-        var key = process.env.WIA_TEST_APP_KEY;
-        return key;
-    },
+    var key = process.env.WIA_TEST_APP_KEY;
+    return key;
+  },
   getStreamConfig: function() {
     return {
       protocol: process.env.STREAM_PROTOCOL || "mqtts",

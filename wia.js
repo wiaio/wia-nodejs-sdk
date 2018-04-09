@@ -28,9 +28,9 @@ var resources = {
   Commands : require('./lib/resources/Commands'),
   Devices: require('./lib/resources/Devices'),
   Events: require('./lib/resources/Events'),
-  Functions : require('./lib/resources/Functions'),
   Locations : require('./lib/resources/Locations'),
   Logs : require('./lib/resources/Logs'),
+  Spaces : require('./lib/resources/Spaces'),
   Users : require('./lib/resources/Users')
 };
 
