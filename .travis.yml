@@ -13,8 +13,6 @@ install:
 - npm install
 script:
 - npm run test
-after_success:
-- npm run coveralls
 before_deploy:
 - echo "Starting deployment."
 deploy:
