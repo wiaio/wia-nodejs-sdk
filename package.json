@@ -31,7 +31,7 @@
     "events": "^2.0.0",
     "mqtt": "^2.17.0",
     "request": "^2.85.0",
-    "util": "^0.10.3"
+    "util": "^0.12.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
