@@ -1,215 +1,207 @@
-'use strict';
+const os = require('os');
+const { exec } = require('child_process');
+const got = require('got');
 
-var os = require('os');
-var exec = require('child_process').exec;
+const fs = require('fs');
+const WiaStream = require('./lib/WiaStream');
+const WiaExceptions = require('./lib/WiaExceptions');
 
-Wia.DEFAULT_PROTOCOL = 'https';
-Wia.DEFAULT_HOST = 'api.wia.io';
-Wia.DEFAULT_PORT = '443';
-Wia.DEFAULT_BASE_PATH = '/v1/';
+const packageJson = require('./package.json');
 
-Wia.DEFAULT_STREAM_PROTOCOL = 'mqtt';
-Wia.DEFAULT_STREAM_HOST = 'api.wia.io';
-Wia.DEFAULT_STREAM_PORT = '1883';
+const DevicesResource = require('./lib/resources/Devices');
+const EventsResource = require('./lib/resources/Events');
+// const LocationsResource = require('./lib/resources/Locations');
+// const SpacesResource = require('./lib/resources/Spaces');
+// const UsersResource = require('./lib/resources/Users');
 
-Wia.DEFAULT_CONFIG_FILE_PATH = os.homedir() + '/.wia/config';
-
-Wia.PACKAGE_VERSION = require('./package.json').version;
-
-Wia.USER_AGENT = {
-  bindings_version: Wia.PACKAGE_VERSION,
-  lang: 'node',
-  lang_version: process.version,
-  platform: process.platform,
-  publisher: 'wia'
+const resources = {
+  Devices: DevicesResource,
+  Events: EventsResource,
+  // Locations: LocationsResource,
+  // Spaces: SpacesResource,
+  // Users: UsersResource,
 };
 
-var resources = {
-  Commands : require('./lib/resources/Commands'),
-  Devices: require('./lib/resources/Devices'),
-  Events: require('./lib/resources/Events'),
-  Locations : require('./lib/resources/Locations'),
-  Logs : require('./lib/resources/Logs'),
-  Spaces : require('./lib/resources/Spaces'),
-  Users : require('./lib/resources/Users')
-};
+class Wia {
+  constructor(opt) {
+    // if (!(this instanceof Wia)) {
+    //   return new Wia(opt);
+    // }
 
-Wia.resources = resources;
+    this.opt = opt;
 
-var WiaStream = require('./lib/WiaStream');
-var request = require('request');
-var WiaExceptions = require('./lib/WiaExceptions');
-var fs = require('fs');
-var os = require('os');
+    this.DEFAULT_PROTOCOL = 'https';
+    this.DEFAULT_HOST = 'api.wia.io';
+    this.DEFAULT_PORT = '443';
+    this.DEFAULT_BASE_PATH = '/v1/';
 
-function Wia(opt) {
-  var self = this;
+    this.DEFAULT_STREAM_PROTOCOL = 'mqtt';
+    this.DEFAULT_STREAM_HOST = 'api.wia.io';
+    this.DEFAULT_STREAM_PORT = '1883';
 
-  if (!(this instanceof Wia)) {
-    return new Wia(opt);
-  }
+    this.DEFAULT_CONFIG_FILE_PATH = `${os.homedir()}/.wia/config`;
 
-  this._api = {
-    accessToken: null,
-    secretKey: null,
-    appKey: null,
-    rest: {
-      host: Wia.DEFAULT_HOST,
-      port: Wia.DEFAULT_PORT,
-      protocol: Wia.DEFAULT_PROTOCOL,
-      basePath: Wia.DEFAULT_BASE_PATH
-    },
-    stream: {
-      protocol: Wia.DEFAULT_STREAM_PROTOCOL,
-      host: Wia.DEFAULT_STREAM_HOST,
-      port: Wia.DEFAULT_STREAM_PORT
-    },
-    agent: null,
-    debug: false,
-    enableCommands: true
-  };
+    this.PACKAGE_VERSION = packageJson.version;
 
-  this._prepResources();
-  this._prepStream();
+    this.USER_AGENT = {
+      bindings_version: this.PACKAGE_VERSION,
+      lang: 'node',
+      lang_version: process.version,
+      platform: process.platform,
+      publisher: 'wia',
+    };
 
-  if (!opt || opt.length == 0) {
-    var configFilePath = process.env.WIA_CONFIG_FILE_PATH || Wia.DEFAULT_CONFIG_FILE_PATH;
-    if (fs.existsSync(configFilePath)) {
-      var contents = fs.readFileSync(configFilePath, 'utf8');
-      if (contents) {
-        var contentsObj = JSON.parse(contents);
-        if (contentsObj) {
-          for (var k in contentsObj) {
-            if (opt.hasOwnProperty(k)) {
-               this._api[k] = contentsObj[k];
+    this.resources = resources;
+
+    this._api = {
+      accessToken: null,
+      appKey: null,
+      rest: {
+        host: this.DEFAULT_HOST,
+        port: this.DEFAULT_PORT,
+        protocol: this.DEFAULT_PROTOCOL,
+        basePath: this.DEFAULT_BASE_PATH,
+      },
+      stream: {
+        protocol: this.DEFAULT_STREAM_PROTOCOL,
+        host: this.DEFAULT_STREAM_HOST,
+        port: this.DEFAULT_STREAM_PORT,
+      },
+      agent: null,
+      debug: false,
+      enableCommands: true,
+    };
+
+    this._prepResources();
+    // this._prepStream();
+
+    if (!opt || opt.length === 0) {
+      const configFilePath = process.env.WIA_CONFIG_FILE_PATH || Wia.DEFAULT_CONFIG_FILE_PATH;
+      if (fs.existsSync(configFilePath)) {
+        const contents = fs.readFileSync(configFilePath, 'utf8');
+        if (contents) {
+          const contentsObj = JSON.parse(contents);
+          if (contentsObj) {
+            for (const k in contentsObj) {
+              // eslint-disable-next-line no-prototype-builtins
+              if (opt.hasOwnProperty(k)) {
+                this._api[k] = contentsObj[k];
+              }
             }
+
+            this.setAccessToken(contentsObj.accessToken);
           }
-
-          this.setAccessToken(contentsObj.accessToken || contentsObj.secretKey);
         }
       }
-    }
-  } else if (typeof opt === "object") {
-    for (var k in opt) {
-      if (opt.hasOwnProperty(k)) {
-         this._api[k] = opt[k];
+    } else if (typeof opt === 'object') {
+      for (const k in opt) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (opt.hasOwnProperty(k)) {
+          this._api[k] = opt[k];
+        }
       }
+      this.setAccessToken(opt.accessToken || opt.secretKey);
+    } else {
+      this.setAccessToken(opt);
     }
-
-    this.setAccessToken(opt.accessToken || opt.secretKey);
-  } else {
-    this.setAccessToken(opt);
   }
-}
 
-Wia.prototype = {
-  setAccessToken: function(accessToken) {
-    if (accessToken) {
-      this._setApiField('accessToken', accessToken);
-      var self = this;
-      request.get(self.getApiUrl() + "whoami", {
-        auth: {
-          bearer: self.getApiField('accessToken')
-        },
-        json: true,
-        headers: self.getHeaders()
-      }, function (error, response, body) {
-        if (error) {
-          console.log(error);
-        }
-
-        if (response.statusCode == 200) {
-          self.clientInfo = body;
-        }
-      });
+  async setAccessToken(accessToken) {
+    if (!accessToken) {
+      throw new WiaExceptions.ValidationError('accessToken param is required.');
     }
-  },
 
-  _setApiField: function(key, value) {
+    this._setApiField('accessToken', accessToken);
+    const response = await got.post(`${this.getApiUrl()}whoami`, {
+      responseType: 'json',
+      headers: this.getHeaders(),
+    });
+
+    if (response.statusCode === 200) {
+      this.clientInfo = response.body;
+      return this.clientInfo;
+    }
+    throw new WiaExceptions.HTTPBadRequestError(response.statusCode, response.body);
+  }
+
+  getAccessToken() {
+    return this.getApiField('accessToken');
+  }
+
+  _setApiField(key, value) {
     this._api[key] = value;
-  },
+  }
 
-  getApiField: function(key, subkey) {
+  getApiField(key, subkey) {
     if (subkey) {
       return this._api[key][subkey];
     }
     return this._api[key];
-  },
+  }
 
-  getApiUrl: function() {
-    return this.getApiField('rest', 'protocol') + "://" + this.getApiField('rest', 'host') + ":" + this.getApiField('rest', 'port') + this.getApiField('rest', 'basePath');
-  },
+  getApiUrl() {
+    return `${this.getApiField('rest', 'protocol')}://${this.getApiField('rest', 'host')}:${this.getApiField('rest', 'port')}${this.getApiField('rest', 'basePath')}`;
+  }
 
-  getClientUserAgent: function(cb) {
+  getClientUserAgent(cb) {
     if (Wia.USER_AGENT_SERIALIZED) {
       return cb(Wia.USER_AGENT_SERIALIZED);
     }
-    exec('uname -a', function(err, uname) {
+    return exec('uname -a', (err, uname) => {
       Wia.USER_AGENT.uname = uname || 'UNKNOWN';
       Wia.USER_AGENT_SERIALIZED = JSON.stringify(Wia.USER_AGENT);
       cb(Wia.USER_AGENT_SERIALIZED);
     });
-  },
+  }
 
-  getHeaders: function() {
-    var obj = {};
+  getHeaders() {
+    const obj = {};
     if (this.getApiField('appKey')) {
       obj['x-app-key'] = this.getApiField('appKey');
     }
+    if (this.getApiField('accessToken')) {
+      obj.authorization = `bearer ${this.getApiField('accessToken')}`;
+    }
     return obj;
-  },
+  }
 
-  generateAccessToken: function(data, cb) {
-    request.post(this.getApiUrl() + "auth/token", {
-      body: data,
-      json: true,
-      headers: this.getHeaders()
-    }, function (error, response, body) {
-      if (cb) {
-        if (error) return cb(error, null);
-        if (response.statusCode === 200 || response.statusCode === 201) {
-          cb(null, body);
-        }
-        else
-          cb(new WiaExceptions.WiaRequestException(response.statusCode, body || ""), null);
-      }
+  async generateAccessToken(data) {
+    const response = await got.post(`${this.getApiUrl()}auth/token`, {
+      json: data,
+      responseType: 'json',
+      headers: this.getHeaders(),
     });
-  },
 
-  whoami: function(cb) {
-    request.get(this.getApiUrl() + "whoami", {
-      json: true,
-      auth: {
-        bearer: this.getApiField('accessToken')
-      }
-    }, function (error, response, body) {
-      if (cb) {
-        if (error) {
-          return cb(error, null);
-        }
+    if (response.statusCode === 200 || response.statusCode === 201) {
+      return response.body;
+    }
+    throw new WiaExceptions.HTTPBadRequestError(response.statusCode, response.body);
+  }
 
-        if (response) {
-          if (response.statusCode === 200) {
-            return cb(null, body);
-          } else {
-            return cb(new WiaExceptions.WiaRequestException(response.statusCode, body || ""), null);
-          }
-        }
-      }
+  async whoami() {
+    const response = await got.post(`${this.getApiUrl()}whoami`, {
+      responseType: 'json',
+      headers: this.getHeaders(),
     });
-  },
 
-  _prepResources: function() {
-    for (var name in resources) {
+    if (response.statusCode === 200) {
+      return response.body;
+    }
+    throw new WiaExceptions.HTTPBadRequestError(response.statusCode, response.body);
+  }
+
+  _prepResources() {
+    // eslint-disable-next-line guard-for-in
+    for (const name in resources) {
       this[
         name[0].toLowerCase() + name.substring(1)
       ] = new resources[name](this);
     }
-  },
+  }
 
-  _prepStream: function() {
+  _prepStream() {
     this.stream = new WiaStream(this);
   }
-};
+}
 
 module.exports = Wia;

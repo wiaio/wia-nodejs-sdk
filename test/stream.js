@@ -1,57 +1,55 @@
-'use strict';
+// const { expect } = require('chai');
+// const testUtils = require('./testUtils');
+// const wia = require('../wia')({
+//   accessToken: testUtils.getDeviceSecretKey(),
+//   stream: testUtils.getStreamConfig(),
+// });
 
-var expect = require('chai').expect;
-var testUtils = require('./testUtils');
-var wia = require('../wia')({
-  accessToken: testUtils.getDeviceSecretKey(),
-  stream: testUtils.getStreamConfig()
-});
+// describe('Stream', () => {
+//   before((done) => {
+//     done();
+//   });
 
-describe('Stream', function () {
-  before(function (done) {
-    done();
-  });
+//   beforeEach((done) => {
+//     wia.stream.disconnect();
+//     setTimeout(() => {
+//       done();
+//     }, 150);
+//   });
 
-  beforeEach(function(done) {
-    wia.stream.disconnect();
-    setTimeout(function() {
-      done();
-    }, 150);
-  });
+//   describe('#connectToStream', () => {
+//     it('should connect to the stream', (done) => {
+//       let doneCalled = false;
+//       wia.stream.on('connect', () => {
+//         if (!doneCalled) {
+//           doneCalled = true;
+//           done();
+//         }
+//       });
+//       wia.stream.connect();
+//     });
+//   });
 
-  describe('#connectToStream', function () {
-    it('should connect to the stream', function (done) {
-      var doneCalled = false;
-      wia.stream.on("connect", function() {
-        if (!doneCalled) {
-          doneCalled = true;
-          done();
-        }
-      });
-      wia.stream.connect();
-    });
-  });
+//   describe('#connectAndDisconnectToStream', () => {
+//     it('should connect and disconnect to the stream', (done) => {
+//       let disconnectCalled = false;
 
-  describe('#connectAndDisconnectToStream', function () {
-    it('should connect and disconnect to the stream', function (done) {
-      var disconnectCalled = false;
+//       wia.stream.on('connect', () => {
+//         if (!disconnectCalled) {
+//           disconnectCalled = true;
+//           wia.stream.disconnect();
+//         }
+//       });
 
-      wia.stream.on("connect", function() {
-        if (!disconnectCalled) {
-          disconnectCalled = true;
-          wia.stream.disconnect();
-        }
-      });
+//       wia.stream.on('disconnect', () => {
+//         done();
+//       });
 
-      wia.stream.on("disconnect", function() {
-        done();
-      });
+//       wia.stream.connect();
+//     });
+//   });
 
-      wia.stream.connect();
-    });
-  });
-
-  after(function (done) {
-      done();
-  });
-});
+//   after((done) => {
+//     done();
+//   });
+// });
