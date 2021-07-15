@@ -28,4 +28,8 @@ jobs:
       - run: npm test
         env:
           NODE_ENV: 'test'
+          DEVICE_ID: ${{ secrets.DEVICE_ID }}
+          DEVICE_SECRET_KEY: ${{ secrets.DEVICE_SECRET_KEY }}
+          ORGANISATION_SECRET_KEY: ${{ secrets.ORGANISATION_SECRET_KEY }}
+          SPACE_ID: ${{ secrets.SPACE_ID }}
 
