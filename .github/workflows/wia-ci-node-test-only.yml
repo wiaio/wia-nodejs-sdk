@@ -1,0 +1,40 @@
+name: "Wia Node Test Only"
+
+on:
+  push:
+    branches-ignore:
+      - "master"
+      - "main"
+
+jobs:
+  test-module:
+    name: "Test module"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout source code"
+        uses: "actions/checkout@v2"
+        with:
+          ref: ${{ github.ref }}
+      # Setup .npmrc file to publish to GitHub Packages
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          registry-url: 'https://npm.pkg.github.com'
+          # Defaults to the user or organization that owns the workflow file
+          scope: '@wiaio'
+      - name: Set up .npmrc
+        run: |
+          echo "@wiaio:registry=https://npm.pkg.github.com/" > ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_PACKAGE_TOKEN }}" >> ~/.npmrc
+      - run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+      - run: npm install --global eslint
+      - run: npm install --global mocha
+      - run: npm install --global nyc
+      - run: npm run eslint
+      - run: npm test
+        env:
+          NODE_ENV: 'test'
+
