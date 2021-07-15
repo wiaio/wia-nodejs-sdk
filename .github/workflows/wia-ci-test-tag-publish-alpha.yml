@@ -19,12 +19,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
-      - name: Set up .npmrc
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.REPO_NPM_TOKEN }}"
+          registry-url: 'https://registry.npmjs.org'
       - run: npm install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
       - run: npm install --global eslint
       - run: npm install --global mocha
       - run: npm install --global nyc
@@ -38,10 +34,6 @@ jobs:
           SPACE_ID: ${{ secrets.SPACE_ID }}
       - name: "cat package.json"
         run: cat ./package.json
-      - name: "Setup Node.js"
-        uses: "actions/setup-node@v1"
-        with:
-          node-version: 14
       - name: "Automated Version Bump"
         id: version-bump
         uses: "phips28/gh-action-bump-version@master"
