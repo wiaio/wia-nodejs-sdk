@@ -3,12 +3,11 @@ name: "Wia Test Tag Publish"
 on:
   push:
     branches:
-      - "master"
-      - "main"
+      - "2.0.0"
 
 jobs:
   test-tag-publish-module:
-    name: "Test tag publish main"
+    name: "Test tag publish on alpha"
     runs-on: ubuntu-latest
 
     steps:
@@ -50,6 +49,8 @@ jobs:
           tag-prefix: 'v'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          default: prerelease
       - name: "cat package.json"
         run: cat ./package.json
       - name: "Create new tag"
