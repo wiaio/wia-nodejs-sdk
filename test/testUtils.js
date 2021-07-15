@@ -1,35 +1,41 @@
-'use strict';
-
-var utils = module.exports = {
-  getUserAccessToken: function() {
-    var key = process.env.USER_ACCESS_TOKEN;
+module.exports = {
+  getUserAccessToken() {
+    const key = process.env.USER_ACCESS_TOKEN;
     return key;
   },
-  getUserUsername: function() {
-    var key = process.env.USER_USERNAME;
+  getUserUsername() {
+    const key = process.env.USER_USERNAME;
     return key;
   },
-  getUserPassword: function() {
-    var key = process.env.USER_PASSWORD;
+  getUserPassword() {
+    const key = process.env.USER_PASSWORD;
     return key;
   },
-  getDeviceId: function() {
-    var key = process.env.DEVICE_ID;
+  getDeviceId() {
+    const key = process.env.DEVICE_ID;
     return key;
   },
-  getDeviceSecretKey: function() {
-    var key = process.env.DEVICE_SECRET_KEY;
+  getDeviceSecretKey() {
+    const key = process.env.DEVICE_SECRET_KEY;
     return key;
   },
-  getAppKey: function() {
-    var key = process.env.WIA_TEST_APP_KEY;
+  getOrganisationSecretKey() {
+    const key = process.env.ORGANISATION_SECRET_KEY;
     return key;
   },
-  getStreamConfig: function() {
+  getAppKey() {
+    const key = process.env.WIA_TEST_APP_KEY;
+    return key;
+  },
+  getSpaceId() {
+    const key = process.env.SPACE_ID;
+    return key;
+  },
+  getStreamConfig() {
     return {
-      protocol: process.env.STREAM_PROTOCOL || "mqtts",
-      host: process.env.STREAM_HOST || "mqtt.wia.io",
-      port: process.env.STREAM_PORT || 8883
+      protocol: process.env.STREAM_PROTOCOL || 'mqtts',
+      host: process.env.STREAM_HOST || 'mqtt.wia.io',
+      port: process.env.STREAM_PORT || 8883,
     };
-  }
-}
+  },
+};

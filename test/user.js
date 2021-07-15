@@ -43,7 +43,8 @@
 //   });
 //
 //   describe('#failToGenerateAccessTokenForInvalidCredentials', function () {
-//     it('should fail to generate an access token for a user with invalid credentials', function (done) {
+// it('should fail to generate an access token
+//   for a user with invalid credentials', function (done) {
 //       var wia = new Wia();
 //       wia.generateAccessToken({
 //         username: "idonotexistever@wia.io",
