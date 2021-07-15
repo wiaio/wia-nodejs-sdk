@@ -16,20 +16,11 @@ jobs:
         uses: "actions/checkout@v2"
         with:
           ref: ${{ github.ref }}
-      # Setup .npmrc file to publish to GitHub Packages
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
-          registry-url: 'https://npm.pkg.github.com'
-          # Defaults to the user or organization that owns the workflow file
-          scope: '@wiaio'
-      - name: Set up .npmrc
-        run: |
-          echo "@wiaio:registry=https://npm.pkg.github.com/" > ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_PACKAGE_TOKEN }}" >> ~/.npmrc
+          registry-url: 'https://registry.npmjs.org'
       - run: npm install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
       - run: npm install --global eslint
       - run: npm install --global mocha
       - run: npm install --global nyc
@@ -37,12 +28,12 @@ jobs:
       - run: npm test
         env:
           NODE_ENV: 'test'
+          DEVICE_ID: ${{ secrets.DEVICE_ID }}
+          DEVICE_SECRET_KEY: ${{ secrets.DEVICE_SECRET_KEY }}
+          ORGANISATION_SECRET_KEY: ${{ secrets.ORGANISATION_SECRET_KEY }}
+          SPACE_ID: ${{ secrets.SPACE_ID }}
       - name: "cat package.json"
         run: cat ./package.json
-      - name: "Setup Node.js"
-        uses: "actions/setup-node@v1"
-        with:
-          node-version: 14
       - name: "Automated Version Bump"
         id: version-bump
         uses: "phips28/gh-action-bump-version@master"
@@ -59,7 +50,7 @@ jobs:
       - name: 'Publish to NPM'
         run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.REPO_NPM_TOKEN }}
       - name: "Create Release"
         id: create_release
         uses: actions/create-release@v1
