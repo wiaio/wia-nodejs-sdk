@@ -1,72 +1,158 @@
-// const { expect } = require('chai');
-// const fs = require('fs');
-// const testUtils = require('./testUtils');
-// const Wia = require('../wia');
+const { expect } = require('chai');
+const randomstring = require('randomstring');
+const testUtils = require('./testUtils');
+const Wia = require('../wia');
 
-// const wia = new Wia({
-//   secretKey: testUtils.getDeviceSecretKey(),
-// });
+describe('Event', () => {
+  before((done) => {
+    done();
+  });
 
-// describe('Wia', () => {
-//   before((done) => {
-//     done();
-//   });
+  describe('#createAnEvent', () => {
+    it('should create an event', async () => {
+      try {
+        const wia = new Wia(testUtils.getDeviceSecretKey());
+        const createdEvent = await wia.events.create({
+          name: randomstring.generate(16),
+          data: 21.5,
+        });
 
-//   describe('#publishAnEvent', () => {
-//     it('should publish an event', (done) => {
-//       wia.events.publish({
-//         name: 'temperature',
-//         data: 21.4564,
-//       }, (err, result) => {
-//         if (err) {
-//           console.log(err);
-//           return;
-//         }
+        expect(createdEvent).to.exist;
+        expect(createdEvent.id).to.exist;
+      } catch (e) {
+        console.log(e);
+        expect(e).to.not.exist;
+      }
+    });
+  });
 
-//         expect(result).to.exist;
-//         expect(result.id).to.exist;
-//         done();
-//       });
-//     });
-//   });
+  describe('#createAnEventObject', () => {
+    it('should create an event with object', async () => {
+      try {
+        const wia = new Wia(testUtils.getDeviceSecretKey());
+        const createdEvent = await wia.events.create({
+          name: randomstring.generate(16),
+          data: {
+            temperature: 123,
+            humidity: 456.789,
+          },
+        });
 
-//   describe('#publishAnEventWithFile', () => {
-//     it('should publish an event with a file', (done) => {
-//       wia.events.publish({
-//         name: 'photo',
-//         file: fs.createReadStream(`${__dirname}/balfie.png`),
-//       }, (err, result) => {
-//         if (err) {
-//           console.log(err);
-//           return;
-//         }
+        expect(createdEvent).to.exist;
+        expect(createdEvent.id).to.exist;
+      } catch (e) {
+        console.log(e);
+        expect(e).to.not.exist;
+      }
+    });
+  });
 
-//         expect(result).to.exist;
-//         expect(result.id).to.exist;
-//         done();
-//       });
-//     });
-//   });
+  describe('#createAnEventString', () => {
+    it('should create an event with string', async () => {
+      try {
+        const wia = new Wia(testUtils.getDeviceSecretKey());
+        const createdEvent = await wia.events.create({
+          name: randomstring.generate(16),
+          data: 'sometextgoeshere',
+        });
 
-//   describe('#publishALocation', () => {
-//     it('should publish a location', (done) => {
-//       wia.locations.publish({
-//         latitude: 35.652832,
-//         longitude: 139.839478,
-//       }, (err, result) => {
-//         if (err) {
-//           console.log(err);
-//           return;
-//         }
+        expect(createdEvent).to.exist;
+        expect(createdEvent.id).to.exist;
+      } catch (e) {
+        console.log(e);
+        expect(e).to.not.exist;
+      }
+    });
+  });
 
-//         expect(result).to.exist;
-//         expect(result.id).to.exist;
-//         done();
-//       });
-//     });
-//   });
+  describe('#createRetrieveAnEvent', () => {
+    it('should create and retrieve an event', async () => {
+      try {
+        const wiaDevice = new Wia(testUtils.getDeviceSecretKey());
+        const eventToCreate = {
+          name: randomstring.generate(16),
+          data: 21.5,
+        };
+        const createdEvent = await wiaDevice.events.create(eventToCreate);
 
-//   after((done) => {
-//     done();
-//   });
-// });
+        expect(createdEvent).to.exist;
+        expect(createdEvent.id).to.exist;
+
+        const wiaOrg = new Wia(testUtils.getOrganisationSecretKey());
+        const retrievedEvent = await wiaOrg.events.retrieve(createdEvent.id);
+
+        expect(retrievedEvent).to.exist;
+        expect(retrievedEvent.id).to.exist;
+        expect(retrievedEvent.id).to.equal(createdEvent.id);
+        expect(retrievedEvent.data).to.equal(eventToCreate.data);
+      } catch (e) {
+        console.log(e);
+        expect(e).to.not.exist;
+      }
+    });
+  });
+
+  describe('#retrieveEventListForADevice', () => {
+    it('should retrieve a list of events for a device', async () => {
+      try {
+        const wia = new Wia(testUtils.getOrganisationSecretKey());
+        const result = await wia.events.list({
+          device: {
+            id: testUtils.getDeviceId(),
+          },
+        });
+
+        expect(result).to.exist;
+
+        result.events.forEach((event) => {
+          expect(event.id).to.exist;
+          expect(event.name).to.exist;
+          expect(event.data).to.exist;
+        });
+
+        expect(result.count).to.exist;
+
+        console.log(`Retrieved ${result.count} events for device.`);
+      } catch (e) {
+        console.log(e);
+        expect(e).to.not.exist;
+      }
+    });
+  });
+
+  describe('#retrieveMinimumEventForADevice', () => {
+    it('should retrieves the minimum event for a device', async () => {
+      try {
+        const wia = new Wia(testUtils.getOrganisationSecretKey());
+        const result = await wia.events.list({
+          device: {
+            id: testUtils.getDeviceId(),
+          },
+          name: 'temperature',
+          order: 'data',
+          sort: 'asc',
+          limit: 1,
+        });
+
+        expect(result).to.exist;
+
+        result.events.forEach((event) => {
+          expect(event.id).to.exist;
+          expect(event.name).to.exist;
+          expect(event.data).to.exist;
+        });
+
+        expect(result.count).to.exist;
+
+        console.log(`Retrieved ${result.count} events for device.`);
+      } catch (e) {
+        console.log(e);
+        expect(e).to.not.exist;
+      }
+    });
+  });
+
+  after((done) => {
+    done();
+  });
+});

@@ -9,14 +9,14 @@ const WiaExceptions = require('./lib/WiaExceptions');
 const packageJson = require('./package.json');
 
 const DevicesResource = require('./lib/resources/Devices');
-// const EventsResource = require('./lib/resources/Events');
+const EventsResource = require('./lib/resources/Events');
 // const LocationsResource = require('./lib/resources/Locations');
 // const SpacesResource = require('./lib/resources/Spaces');
 // const UsersResource = require('./lib/resources/Users');
 
 const resources = {
   Devices: DevicesResource,
-  // Events: EventsResource,
+  Events: EventsResource,
   // Locations: LocationsResource,
   // Spaces: SpacesResource,
   // Users: UsersResource,

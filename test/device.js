@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const randomstring = require('randomstring');
-const { default: create } = require('got/dist/source/create');
 const testUtils = require('./testUtils');
 const Wia = require('../wia');
 
@@ -84,7 +83,7 @@ describe('Device', () => {
           {
             state: {
               foo: fooValue,
-            }
+            },
           },
         );
 
