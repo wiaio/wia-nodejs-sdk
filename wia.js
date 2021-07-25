@@ -112,7 +112,7 @@ class Wia {
     }
 
     this._setApiField('accessToken', accessToken);
-    const response = await got.post(`${this.getApiUrl()}whoami`, {
+    const response = await got(`${this.getApiUrl()}whoami`, {
       responseType: 'json',
       headers: this.getHeaders(),
     });
@@ -179,7 +179,7 @@ class Wia {
   }
 
   async whoami() {
-    const response = await got.post(`${this.getApiUrl()}whoami`, {
+    const response = await got(`${this.getApiUrl()}whoami`, {
       responseType: 'json',
       headers: this.getHeaders(),
     });
