@@ -112,16 +112,20 @@ class Wia {
     }
 
     this._setApiField('accessToken', accessToken);
-    const response = await got(`${this.getApiUrl()}whoami`, {
-      responseType: 'json',
-      headers: this.getHeaders(),
-    });
-
-    if (response.statusCode === 200) {
-      this.clientInfo = response.body;
-      return this.clientInfo;
-    }
-    throw new WiaExceptions.HTTPBadRequestError(response.statusCode, response.body);
+    try {
+      const response = await got(`${this.getApiUrl()}whoami`, {
+        responseType: 'json',
+        headers: this.getHeaders(),
+      });
+  
+      if (response.statusCode === 200) {
+        this.clientInfo = response.body;
+        return this.clientInfo;
+      }
+      throw new WiaExceptions.HTTPBadRequestError(response.statusCode, response.body);
+    // eslint-disable-next-line no-empty
+    } catch (e) { }
+    return null;
   }
 
   getAccessToken() {
