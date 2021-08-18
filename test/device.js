@@ -129,23 +129,23 @@ describe('Device', () => {
     });
   });
 
-  describe('#retrieveDeviceListBadSpaceId', () => {
-    it('should throw an error when trying to get devices for a space that does not exist', async () => {
-      try {
-        const wia = new Wia(testUtils.getOrganisationSecretKey());
-        const result = await wia.devices.list({
-          space: {
-            id: 'abc123',
-          },
-        });
+  // describe('#retrieveDeviceListBadSpaceId', () => {
+  //   it('should throw an error when devices for a space that does not exist', async () => {
+  //     try {
+  //       const wia = new Wia(testUtils.getOrganisationSecretKey());
+  //       const result = await wia.devices.list({
+  //         space: {
+  //           id: 'abc123',
+  //         },
+  //       });
 
-        expect(result).to.not.exist;
-      } catch (e) {
-        console.log(e);
-        expect(e).to.exist;
-      }
-    });
-  });
+  //       expect(result).to.not.exist;
+  //     } catch (e) {
+  //       console.log(e);
+  //       expect(e).to.exist;
+  //     }
+  //   });
+  // });
 
   // describe('#createInstanceOfWiaDeviceSecretKey', () => {
   //   it('should create an instance of wia using a device secret key', (done) => {

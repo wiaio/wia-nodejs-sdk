@@ -120,37 +120,37 @@ describe('Event', () => {
     });
   });
 
-  describe('#retrieveMinimumEventForADevice', () => {
-    it('should retrieves the minimum event for a device', async () => {
-      try {
-        const wia = new Wia(testUtils.getOrganisationSecretKey());
-        const result = await wia.events.list({
-          device: {
-            id: testUtils.getDeviceId(),
-          },
-          name: 'temperature',
-          order: 'data',
-          sort: 'asc',
-          limit: 1,
-        });
+  // describe('#retrieveMinimumEventForADevice', () => {
+  //   it('should retrieves the minimum event for a device', async () => {
+  //     try {
+  //       const wia = new Wia(testUtils.getOrganisationSecretKey());
+  //       const result = await wia.events.list({
+  //         device: {
+  //           id: testUtils.getDeviceId(),
+  //         },
+  //         name: 'temperature',
+  //         order: 'data',
+  //         sort: 'asc',
+  //         limit: 1,
+  //       });
 
-        expect(result).to.exist;
+  //       expect(result).to.exist;
 
-        result.events.forEach((event) => {
-          expect(event.id).to.exist;
-          expect(event.name).to.exist;
-          expect(event.data).to.exist;
-        });
+  //       result.events.forEach((event) => {
+  //         expect(event.id).to.exist;
+  //         expect(event.name).to.exist;
+  //         expect(event.data).to.exist;
+  //       });
 
-        expect(result.count).to.exist;
+  //       expect(result.count).to.exist;
 
-        console.log(`Retrieved ${result.count} events for device.`);
-      } catch (e) {
-        console.log(e);
-        expect(e).to.not.exist;
-      }
-    });
-  });
+  //       console.log(`Retrieved ${result.count} events for device.`);
+  //     } catch (e) {
+  //       console.log(e);
+  //       expect(e).to.not.exist;
+  //     }
+  //   });
+  // });
 
   after((done) => {
     done();
