@@ -32,16 +32,18 @@ class Wia {
 
     this.opt = opt;
 
-    this.DEFAULT_PROTOCOL = 'https';
-    this.DEFAULT_HOST = 'api.wia.io';
-    this.DEFAULT_PORT = '443';
-    this.DEFAULT_BASE_PATH = '/v1/';
+    this.DEFAULT_PROTOCOL = process?.env?.PROTOCOL ?? 'https';
+    this.DEFAULT_HOST = process?.env?.HOST ?? 'api.wia.io';
+    this.DEFAULT_PORT = process?.env?.PORT ?? '443';
+    this.DEFAULT_BASE_PATH = process?.env?.BASE_PATH ?? '/v1/';
 
     this.DEFAULT_STREAM_PROTOCOL = 'mqtt';
     this.DEFAULT_STREAM_HOST = 'api.wia.io';
     this.DEFAULT_STREAM_PORT = '1883';
 
     this.DEFAULT_CONFIG_FILE_PATH = `${os.homedir()}/.wia/config`;
+
+    this.DEFAULT_DO_WHOAMI = process?.env?.DO_WHOAMI ?? true;
 
     this.PACKAGE_VERSION = packageJson.version;
 
@@ -114,19 +116,22 @@ class Wia {
     }
 
     this._setApiField('accessToken', accessToken);
-    try {
-      const response = await got(`${this.getApiUrl()}whoami`, {
-        responseType: 'json',
-        headers: this.getHeaders(),
-      });
+    if (this.DEFAULT_DO_WHOAMI) {
+      try {
+        const response = await got(`${this.getApiUrl()}whoami`, {
+          responseType: 'json',
+          headers: this.getHeaders(),
+        });
+  
+        if (response.statusCode === 200) {
+          this.clientInfo = response.body;
+          return this.clientInfo;
+        }
+        throw new WiaExceptions.HTTPBadRequestError(response.statusCode, response.body);
+      // eslint-disable-next-line no-empty
+      } catch (e) { }
+    }
 
-      if (response.statusCode === 200) {
-        this.clientInfo = response.body;
-        return this.clientInfo;
-      }
-      throw new WiaExceptions.HTTPBadRequestError(response.statusCode, response.body);
-    // eslint-disable-next-line no-empty
-    } catch (e) { }
     return null;
   }
 
