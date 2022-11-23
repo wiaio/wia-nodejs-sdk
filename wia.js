@@ -122,7 +122,7 @@ class Wia {
           responseType: 'json',
           headers: this.getHeaders(),
         });
-  
+
         if (response.statusCode === 200) {
           this.clientInfo = response.body;
           return this.clientInfo;
