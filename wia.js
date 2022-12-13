@@ -32,9 +32,9 @@ class Wia {
 
     this.opt = opt;
 
-    this.DEFAULT_PROTOCOL = process?.env?.PROTOCOL ?? 'https';
-    this.DEFAULT_HOST = process?.env?.HOST ?? 'api.wia.io';
-    this.DEFAULT_PORT = process?.env?.PORT ?? '443';
+    this.DEFAULT_PROTOCOL = process?.env?.PROTOCOL ?? 'http';
+    this.DEFAULT_HOST = process?.env?.HOST ?? 'wia-rest-api';
+    this.DEFAULT_PORT = process?.env?.PORT ?? '8080';
     this.DEFAULT_BASE_PATH = process?.env?.BASE_PATH ?? '/v1/';
 
     this.DEFAULT_STREAM_PROTOCOL = 'mqtt';
@@ -43,7 +43,7 @@ class Wia {
 
     this.DEFAULT_CONFIG_FILE_PATH = `${os.homedir()}/.wia/config`;
 
-    this.DEFAULT_DO_WHOAMI = process?.env?.DO_WHOAMI ?? true;
+    this.DEFAULT_DO_WHOAMI = process?.env?.DO_WHOAMI ?? false;
 
     this.PACKAGE_VERSION = packageJson.version;
 
